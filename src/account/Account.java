@@ -12,10 +12,12 @@ public class Account {
     }
 
     public int getBalance() {
+
         return balance;
     }
 
     public void withdraw(int withdrawAmount) {
+
         balance = balance - withdrawAmount;
     }
 
@@ -25,10 +27,12 @@ public class Account {
     }
 
     public void registerAccount() {
+
         Account account = new Account();
     }
 
     public int getAccount(){
+
         return account;
     }
 }

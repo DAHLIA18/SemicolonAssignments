@@ -13,14 +13,23 @@ public class Entry {
         }
 
         public void setDate(String date) {
+
             this.date = date;
         }
 
         public String getContent() {
+
             return content;
         }
 
         public void setContent(String content) {
-            this.content = content;
+
+             this.content = content;
         }
+
+    public void setTitle(String title) {
     }
+
+    public void setBody(String body) {
+    }
+}

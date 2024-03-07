@@ -25,7 +25,7 @@ public class Bank {
         return Integer.parseInt(accountNumberStr);
     }
 
-    public void deposit(int accountNumber, double amount) {
+    public void deposit(int accountNumber, int amount) {
         Account account = findAccount(accountNumber);
         if (account != null) {
             account.deposit(amount);
@@ -34,7 +34,7 @@ public class Bank {
         }
     }
 
-    public void withdraw(int accountNumber, double amount, String pin) {
+    public void withdraw(int accountNumber, int amount, String pin) {
         Account account = findAccount(accountNumber);
         if (account != null) {
             account.withdraw(amount, pin);
@@ -43,7 +43,7 @@ public class Bank {
         }
     }
 
-    public void transfer(int fromAccountNumber, int toAccountNumber, double amount, String pin) {
+    public void transfer(int fromAccountNumber, int toAccountNumber, int amount, String pin) {
         Account fromAccount = findAccount(fromAccountNumber);
         Account toAccount = findAccount(toAccountNumber);
 
@@ -55,7 +55,7 @@ public class Bank {
         }
     }
 
-    public double checkBalance(int accountNumber, String pin) {
+    public int checkBalance(int accountNumber, String pin) {
         Account account = findAccount(accountNumber);
         if (account != null) {
             return account.getBalance(pin);
