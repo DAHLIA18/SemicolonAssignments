@@ -1,95 +1,111 @@
-//package bankApp;
-//
-//import java.util.Scanner;
-//
-//public class BankApp {
-//    public static String enterPin(Scanner input) {
-//        System.out.print("Enter PIN: ");
-//        return input.next();
-//    }
-//
-//    public static void main(String[] args) {
-//        Bank bank = new Bank("Dahlia's Bank");
-//
-//        try (Scanner input = new Scanner(System.in)) {
-//            while (true) {
-//                System.out.println("Welcome to Dahlia's Bank ATM");
-//                System.out.println("Select an option:");
-//                System.out.println("1. Register Account");
-//                System.out.println("2. Deposit");
-//                System.out.println("3. Withdraw");
-//                System.out.println("4. Transfer");
-//                System.out.println("5. Check Balance");
-//                System.out.println("6. Remove Account");
-//                System.out.println("7. Exit");
-//                System.out.print("Enter your choice: ");
-//                int choice = input.nextInt();
-//
-//                switch (choice) {
-//                    case 1 -> {
-//                        System.out.print("Enter name: ");
-//                        String name = input.next();
-//                        System.out.print("Enter PIN: ");
-//                        String pin = input.next();
-//                        bank.registerCustomer(name, pin);
-//                        System.out.println("Account registered successfully.");
-//                    }
-//                    case 2 -> {
-//                        System.out.println();
-//                        System.out.print("Enter account number: ");
-//                        int accountNumber2 = input.nextInt();
-//                        System.out.print("Enter amount to deposit: ");
-//                        double depositAmount2 = input.nextDouble();
-//                        bank.deposit(accountNumber2, depositAmount2);
-//                        System.out.println("Deposit successful.");
-//                    }
-//                    case 3 -> {
-//                        System.out.print("Enter account number: ");
-//                        int accountNumber3 = input.nextInt();
-//                        System.out.print("Enter amount to withdraw: ");
-//                        double withdrawAmount3 = input.nextDouble();
-//                        System.out.print("Enter PIN: ");
-//                        String withdrawPin3 = input.next();
-//                        bank.withdraw(accountNumber3, withdrawAmount3, withdrawPin3);
-//                        System.out.println("Withdrawal successful.");
-//                    }
-//                    case 4 -> {
-//                        System.out.print("Enter account number to transfer from: ");
-//                        int fromAccountNumber4 = input.nextInt();
-//                        System.out.print("Enter account number to transfer to: ");
-//                        int toAccountNumber4 = input.nextInt();
-//                        System.out.print("Enter amount to transfer: ");
-//                        double transferAmount4 = input.nextDouble();
-//                        System.out.print("Enter PIN: ");
-//                        String transferPin4 = input.next();
-//                        bank.transfer(fromAccountNumber4, toAccountNumber4, transferAmount4, transferPin4);
-//                        System.out.println("Transfer successful.");
-//                    }
-//                    case 5 -> {
-//                        System.out.print("Enter account number: ");
-//                        int accountNumber5 = input.nextInt();
-//                        System.out.print("Enter PIN: ");
-//                        String checkBalancePin5 = input.next();
-//                        double balance5 = bank.checkBalance(accountNumber5, checkBalancePin5);
-//                        System.out.println("Current balance: " + balance5);
-//                    }
-//                    case 6 -> {
-//                        System.out.print("Enter account number: ");
-//                        int accountNumber6 = input.nextInt();
-//                        System.out.print("Enter PIN: ");
-//                        String removeAccountPin6 = input.next();
-//                        bank.removeAccount(accountNumber6, removeAccountPin6);
-//                        System.out.println("Account removed successfully.");
-//                    }
-//                    case 7 -> {
-//                        System.out.println("Thank you for using Dahlia's Bank ATM. Goodbye!");
-//                        return;
-//                    }
-//                    default -> System.out.println("Invalid choice. Please try again.");
-//                }
-//            }
-//        } catch (Exception e) {
-//            System.out.println("Error: " + e.getMessage());
-//        }
-//    }
-//}
+package bankApp;
+import java.util.Scanner;
+
+import static java.lang.System.exit;
+import static java.lang.System.in;
+public class BankApp {
+
+
+
+        private static Bank dcBank = new Bank();
+
+        public static void main(String[] args) {
+            startBank();
+        }
+
+        private static void startBank(){
+            String mainMenu = """
+                Welcome to DC Bank
+                1 -> Create Account
+                2 -> Deposit
+                3 -> Withdraw
+                4 -> Transfer
+                5 -> checkBalance
+                6 -> Exit
+                """;
+            String userInput = input(mainMenu);
+            switch (userInput){
+                case "1" -> createAccount();
+                case "2" -> deposit();
+                case "3" -> withdraw();
+                case "4" -> transfer();
+                case "5" -> checkBalance();
+                case "6" -> exit(6);
+            }
+        }
+
+        private static void createAccount() {
+            String accountName = input("Enter your account name");
+            String pin = input("Enter your desired pin");
+            dcBank.createAccountFor(accountName, pin);
+            display(String.format("Account created for %s%n", accountName));
+            startBank();
+        }
+
+        private static void deposit() {
+            String accountNumber = input("Enter your account number");
+            int amount = inputInt("Enter amount");
+            try {
+                dcBank.deposit(amount, accountNumber);
+                display(String.format("Your have successfully deposited %d", amount));
+            }
+            catch (InvalidAmountException ex){
+                display(ex.getMessage());
+                deposit();
+            }
+            startBank();
+        }
+
+        private static void withdraw() {
+            int amount = inputInt("Enter Amount to withdraw: ");
+            String accountNumber = input("Enter Your Account Number");
+            String pin = input("Enter Your Pin: ");
+            try {
+                dcBank.withdraw(amount, accountNumber, pin);
+                display(String.format("You have successfully withdrawn %d", amount));
+            }catch (InvalidAmountException | InsufficientFundsException ex) {
+                display(ex.getMessage());
+                withdraw();
+            }
+            startBank();
+        }
+
+        private static void transfer(){
+            String senderAccount = input("Enter account to transfer from: ");
+            String receiverAccount = input(" Enter account to receive payment: ");
+            int amount = inputInt("Enter amount to transfer: ");
+            String pin = input("Enter Your Pin: ");
+            dcBank.transfer(senderAccount, receiverAccount, amount, pin);
+            display(String.format("You have successfully transferred %d to account %s", amount, receiverAccount));
+            startBank();
+        }
+
+        private static void checkBalance(){
+            String accountNumber = input("Enter your account number: ");
+            String pin = input("Enter Your PIN");
+            try {
+                var balance = dcBank.findAccount(accountNumber).getBalance(pin);
+                display(String.format("Your balance is %d", balance));
+            } catch (InvalidPinException ex){
+                display(ex.getMessage());
+            }
+            startBank();
+        }
+
+        private static int inputInt(String prompt) {
+            display(prompt);
+            Scanner scanner = new Scanner(System.in);
+            return scanner.nextInt();
+        }
+
+        private static String input(String prompt){
+            display(prompt);
+            Scanner scanner = new Scanner(System.in);
+            return  scanner.nextLine();
+        }
+
+        private static void display(String prompt){
+            System.out.println(prompt);
+        }
+
+}

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RiderPaymentTest {
+public class RiderPaymentTest {
     @Test
     public void testToCalculatePaymentForLessThan50PercentSuccessfulDeliveries() {
         int successfulDeliveries = 25;

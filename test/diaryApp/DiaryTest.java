@@ -1,77 +1,84 @@
 package diaryApp;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 class DiaryTest {
+    private Diary diary;
 
-//    private void testUpdateEntryWithInvalidsID() {
-//    }
-//
-//    private void testUnlockDiaryWithIncorrectPassword() {
-//    }
-//
-//    private void testCreateEntryWhenDiaryIsLocked() {
-//    }
-        @Test
-        public void testDiaryClassExist(){
-                Diary diary  = new Diary("user", "password");
-                assertNotNull(diary);
-
-        }
-        @Test
-        public void testUnlockDairyWithIncorrectPassword() {
-            Diary diary = new Diary("user", "password");
-            diary.unlockDiary("incorrect password");
-        }
-
-        @Test
-        public void testCreateEntryWhenDiaryIsLocated() {
-                Diary diary = new Diary("user", "password");
-                diary.createEntry("2024-05-30", "Today's is a good day");
-        }
-
-        @Test
-        public void testCreateEntryWithInvalidDateFormat(){
-                Diary diary = new Diary("user", "password");
-                diary.unlockDiary("password");
-                diary.createEntry("22-02-2022", "Invalid date format");
-        }
-        @Test
-        public void testCreateEntryWithEmptyContent() {
-                Diary diary = new Diary("user", "password");
-                diary.unlockDiary("password");
-                diary.createEntry("2022-02-23", "");
-        }
-        @Test
-        public void testDeleteEntryWithInvalidID() {
-                Diary diary = new Diary("user", "password");
-                diary.unlockDiary("password");
-                diary.deleteEntry(10);
-        }
-        @Test
-        public void testFindEntryByInvalidID() {
-                Diary diary = new Diary("user", "password");
-                diary.unlockDiary("password");
-                Entry entry = diary.findEntryById(10);
-        System.out.println(entry);
-        }
-
-        @Test
-        public void testUpdateEntryWithInvalidID() {
-                Diary diary = new Diary("user", "password");
-                diary.unlockDiary("password");
-                diary.updateEntry(10, "2022-02-23", "Updated entry");
-        }
-        @Test
-        public void testUpdateEntryWithInvalidDateFormat() {
-                Diary diary = new Diary("user", "password");
-                diary.unlockDiary("password");
-                diary.createEntry("2022-02-23", "Entry to be updated");
-                diary.updateEntry(2, "23-02-2022", "Invalid date format");
-        }
+    @BeforeEach
+    void setUp() {
+        diary = new Diary( "user", "1234");
     }
 
+    @Test
+    public void testDiaryClassExist(){
+//        Diary diary  = new Diary("user", "password");
+        assertNotNull(diary);
 
+    }
+
+    @Test
+    public void testUnlockDairyWithIncorrectPassword() {
+        Diary diary = new Diary("user", "1234");
+        diary.unlockDiary("1234");
+        assertEquals(true, diary.isLocked());
+    }
+
+    @Test
+    public void testDiaryCanBeLocked() {
+        diary.lockDiary();
+        assertTrue(diary.isLocked());
+    }
+
+    @Test
+    public void testCreateEntryWhenDiaryIsUnlocked() {
+        diary.unlockDiary("1234");
+        diary.createEntry(1,"title", "Today's is a good day");
+        assertEquals(1, diary.getEntries().size());
+    }
+
+    @Test
+    public void testCreateEntryWithEmptyContent() {
+        diary.unlockDiary("1234");
+        diary.createEntry(1, "title", " ");
+        assertEquals(1, diary.getEntries().size());
+    }
+
+    @Test
+    public void testDeleteEntryWithInvalidID() {
+        diary.unlockDiary("1234");
+        diary.createEntry(1, "title", "My diary");
+        diary.deleteEntry(10);
+        assertEquals(1, diary.getEntries().size());
+    }
+
+    @Test
+    public void testDeleteEntryWithValidID() {
+        diary.unlockDiary("1234");
+        diary.createEntry(1, "title", "My diary");
+        diary.createEntry(2, "title2", "My diary post");
+        diary.deleteEntry(1);
+        assertEquals(1, diary.getEntries().size());
+    }
+
+    @Test
+    public void testFindEntryByID() {
+        diary.unlockDiary("1234");
+        diary.createEntry(1, "title", "My diary");
+
+        assertEquals(1, diary.findEntryById(1).getId());
+    }
+
+    @Test
+    public void testUpdateEntryWithInvalidID() {
+        diary.unlockDiary("1234");
+        diary.createEntry(1, "title", "My diary");
+        diary.createEntry(2, "title2", "My dairy 2");
+        diary.updateEntry(2, "titleNew", "Updated entry");
+        assertEquals("titleNew", diary.findEntryById(2).getTitle());
+    }
+
+}

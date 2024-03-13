@@ -5,106 +5,57 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class MenstrualCycleCalculator {
+        public static void main(String[] args) {
+            Scanner scanner = new Scanner(System.in);
 
-    private int averageCycleLength;
-    private String startingDate;
-    private String nextPeriodDate;
-    private String ovulationDate;
-    private String safePeriodStart;
-    private String safePeriodEnd;
-    private String disclaimer;
-    private int age;
+            System.out.println("Whats your Name Please: ");
+            String name = scanner.nextLine();
 
+            System.out.println("Enter your Cycle length:");
+            int cycleLength = scanner.nextInt();
 
-    public void setAverageCycleLength(int averageCycleLength) {
-        this.averageCycleLength = averageCycleLength;
-    }
+            System.out.println("Generate flow report for how many months:");
+            int months = scanner.nextInt();
 
-    public void setStartingDate(String StartingDate) {
-        this.startingDate = startingDate;
-    }
+            System.out.println("Date of last flow (in the format of DD/MM/YYYY):");
+            scanner.nextLine();
+            String inputDate = scanner.nextLine();
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate lastFlowDate = LocalDate.parse(inputDate, formatter);
 
+            System.out.println("Do you want to see your Flow Report (Yes/No)?:");
+            String showReport = scanner.nextLine();
 
-    public String getNextPeriodDate() {
-        return nextPeriodDate;
-    }
+            if (showReport.equalsIgnoreCase("Yes")) {
+                for (int i = 0; i < months; i++) {
+                    System.out.println("=====================================");
+                    System.out.println("Flow report for Month " + (i + 1));
+                    System.out.println("=====================================");
 
-    public String getOvulationDate() {
-        return ovulationDate;
-    }
+                    LocalDate nextFlowDate = lastFlowDate.plusDays(cycleLength);
+                    System.out.println("Next Flow Date: " + nextFlowDate.format(formatter));
 
-    public String getSafePeriodStart() {
-        return safePeriodStart;
-    }
+                    LocalDate ovulationDate = lastFlowDate.plusDays(cycleLength - 14);
+                    System.out.println("Ovulation Date: " + ovulationDate.format(formatter));
 
-    public String getSafePeriodEnd() {
-        return safePeriodEnd;
-    }
+                    LocalDate fertileStart = ovulationDate.minusDays(3);
+                    LocalDate fertileEnd = ovulationDate.plusDays(4);
+                    System.out.println("Fertile Period: " + fertileStart.format(formatter) + " to " + fertileEnd.format(formatter));
 
+                    LocalDate freePeriodStart1 = lastFlowDate.plusDays(4);
+                    LocalDate freePeriodEnd1 = lastFlowDate.plusDays(9);
+                    LocalDate freePeriodStart2 = nextFlowDate.minusDays(9);
+                    LocalDate freePeriodEnd2 = nextFlowDate.minusDays(4);
+                    System.out.println("Safe Period: " + freePeriodStart1.format(formatter) + " to " + freePeriodEnd1.format(formatter) + " and " +
+                            freePeriodStart2.format(formatter) + " to " + freePeriodEnd2.format(formatter));
 
-    public void calculateCycleInformation() {
-
-        LocalDate startDate = LocalDate.parse(startingDate, DateTimeFormatter.ISO_LOCAL_DATE);
-
-
-        LocalDate nextPeriodStart = startDate.plusDays(averageCycleLength);
-        nextPeriodDate = nextPeriodStart.format(DateTimeFormatter.ISO_LOCAL_DATE);
-
-
-        LocalDate ovulationStart = startDate.plusDays(averageCycleLength / 2);
-        ovulationDate = ovulationStart.format(DateTimeFormatter.ISO_LOCAL_DATE);
-
-
-        LocalDate safePeriodStart = startDate.minusDays(5);
-        this.safePeriodStart = safePeriodStart.format(DateTimeFormatter.ISO_LOCAL_DATE);
-
-        LocalDate safePeriodEnd = startDate.plusDays(5);
-        this.safePeriodEnd = safePeriodEnd.format(DateTimeFormatter.ISO_LOCAL_DATE);
-
-
-        if (age < 8) {
-            disclaimer = "Please consult with a healthcare professional for accurate information.";
-        } else {
-            disclaimer = "This information is provided as a general guide. Consult with a healthcare professional for personalized advice.";
+                    LocalDate nextFlowPeriodStart = nextFlowDate.minusDays(3);
+                    LocalDate nextFlowPeriodEnd = nextFlowDate.plusDays(3);
+                    System.out.println("Next Flow Period: " + nextFlowPeriodStart.format(formatter) + " to " + nextFlowPeriodEnd.format(formatter));
+                    lastFlowDate = nextFlowDate;
+                }
+                System.out.println("==========================================");
+            }
         }
     }
-
-
-    public static void main(String[] args) {
-        MenstrualCycleCalculator calculator = new MenstrualCycleCalculator();
-
-        Scanner input = new Scanner(System.in);
-
-        System.out.print("Enter your average menstrual cycle length (in days): ");
-        int cycleLength = input.nextInt();
-        calculator.setAverageCycleLength(cycleLength);
-
-        System.out.print("Enter the starting date of your last period (YYYY-MM-DD): ");
-        String startDate = input.next();
-        calculator.setStartingDate(startDate);
-
-        System.out.print("Enter your age: ");
-        int age = input.nextInt();
-        calculator.setAge(age);
-
-        calculator.calculateCycleInformation();
-
-
-        System.out.println("Next Period Date: " + calculator.getNextPeriodDate());
-        System.out.println("Ovulation Date: " + calculator.getOvulationDate());
-        System.out.println("Safe Period Start: " + calculator.getSafePeriodStart());
-        System.out.println("Safe Period End: " + calculator.getSafePeriodEnd());
-        System.out.println("Disclaimer: " + calculator.getDisclaimer());
-
-        input.close();
-    }
-
-
-    public String getDisclaimer() {
-        return disclaimer;
-    }
-}

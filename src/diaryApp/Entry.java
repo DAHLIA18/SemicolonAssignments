@@ -1,35 +1,53 @@
 package diaryApp;
+
+import java.time.LocalDateTime;
+
 public class Entry {
-        private String date;
-        private String content;
+    private int id;
+    private String title;
+    private String body;
+    private LocalDateTime dateCreated;
 
-        public Entry(String date, String content) {
-            this.date = date;
-            this.content = content;
-        }
+    public Entry(int id, String title, String body) {
+        this.id = id;
+        this.title = title;
+        this.body = body;
+    }
 
-        public String getDate() {
-            return date;
-        }
 
-        public void setDate(String date) {
+    public  void add(int id, String title, String body) {
+        Entry entry = new Entry(id, title, body);
+    }
 
-            this.date = date;
-        }
+    public int getId() {
+        return id;
+    }
 
-        public String getContent() {
+    public void setId(int id) {
+        this.id = id;
+    }
 
-            return content;
-        }
-
-        public void setContent(String content) {
-
-             this.content = content;
-        }
+    public String getTitle() {
+        return title;
+    }
 
     public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBody() {
+        return body;
     }
 
     public void setBody(String body) {
+        this.body = body;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }

@@ -5,71 +5,114 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AccountTest {
-    private Account account;
+public class AccountTest {
+    private Account dahliaAccount;
 
     @BeforeEach
     public void setUp(){
-        account = new Account("Dahlia", 1, 0, "1234" );
-
-    }
-    
-    @Test
-    void testThatAmountCanBeDepositedInAccount() {
-        account.deposit(1000);
-        assertEquals(1000, account.checkBalance("1234"));
-
+        dahliaAccount = new Account("1", "Dahlia", "1212");
     }
 
     @Test
-    void testThatAmountCanBeDepositedMoreThanOnce() {
-        account.deposit(1000);
-        account.deposit(5000);
-        account.deposit(1000);
-        assertEquals(7000, account.checkBalance("1234"));
-    }
-    @Test
-    void depositZeroAmount_throwInvalidAmountExceptionTest() {
-        account.deposit(2000);
-        assertThrows(InvalidAmountException.class, ()-> account.deposit(0));
-        assertEquals(2000, account.checkBalance("1234"));
-    }
-    @Test
-    void depositNegativeAmount_throwInvalidAmountExceptionTest() {
-        assertThrows(InvalidAmountException.class, ()-> account.deposit(-2000));
-        assertEquals(0, account.checkBalance("1234"));
-    }
-    @Test
-    void testThatAmountCanBeWithdrawInAccount() {
-        account.deposit(4000);
-        account.withdraw(2000, "1234");
-        assertEquals(2000,account.checkBalance("1234"));
-    }
-    @Test
-    void withdrawNegativeAmount_throwInvalidAmountExceptionTest(){
-        account.deposit(4000);
-        assertThrows(InvalidAmountException.class, ()-> account.withdraw(-2000, "1234"));
-        assertEquals(4000, account.checkBalance("1234"));
+    public void accountCanBeCreatedWithZeroBalanceTest(){
+        //given that account exist
+        //check that account exists
+        //Check that balance is zero
+        assertNotNull(dahliaAccount);
+        assertEquals(0, dahliaAccount.getBalance("1212"));
     }
 
     @Test
-    void withdrawZeroAmount_throwInvalidAmountExceptionTest(){
-        account.deposit(4000);
-        assertThrows(InvalidAmountException.class, ()-> account.withdraw(0, "1234"));
-        assertEquals(4000, account.checkBalance("1234"));
+    public void depositMoney_balanceIncreasesTest(){
+        //given that I have account and balance is zero;
+        //when I deposit 200
+        //check that balance is 200
+        assertEquals(0, dahliaAccount.getBalance("1212"));
+        dahliaAccount.deposit(200);
+        int myBalance = dahliaAccount.getBalance("1212");
+        assertEquals(200, myBalance);
     }
 
     @Test
-    void changePin() {
-        account.changePin("1234", "4321");
-        assertEquals("4321", account.getPin());
-
+    public void cannotDepositNegativeAmount(){
+        //given that I have an account
+        //when I try to deposit negative amount -2500
+        //check that balance is zero;
+        assertEquals(0, dahliaAccount.getBalance("1212"));
+        assertThrows(InvalidAmountException.class, ()-> dahliaAccount.deposit(-2500));
     }
 
     @Test
-    void invalidPin_throwInvalidPinExceptionTest(){
-        account.deposit(5000);
-        assertThrows(InvalidPinException.class, ()-> account.withdraw(2000, "3452"));
-
+    public void depositNegativeDepositThrowsExceptionTest(){
+        assertThrows(InvalidAmountException.class, ()-> dahliaAccount.deposit(-2500));
     }
+
+    @Test
+
+    public void getBalanceWithPin_returnsBalanceTest(){
+        //given I have money in my account
+        //when I check my balance with wrong pin
+        //balance is zer0
+        dahliaAccount.deposit(2000);
+        int myBalance = dahliaAccount.getBalance("1212");
+        assertEquals(2000, myBalance);
+    }
+
+    @Test
+
+    public void getBalanceWithWrongPin_returnsZeroTestTwice(){
+        //given I have money in my account
+        //when I check my balance with wrong pin
+        //balance is zero
+        assertThrows(InvalidPinException.class, ()-> dahliaAccount.getBalance("2222"));
+    }
+
+    @Test
+    public void withdrawRightPinWorksTest(){
+        //given that I have account
+        //given when I try to withdraw 2000 with 1234 as pin
+        //check that current balance is 3000
+        dahliaAccount.deposit(5_000);
+        assertEquals(5_000, dahliaAccount.getBalance("1212"));
+        dahliaAccount.withdraw(2000, "1212");
+    }
+
+    @Test
+    public void withdrawWithNegativeAmountThrowExceptionTest(){
+        assertThrows(InvalidAmountException.class, ()-> dahliaAccount.withdraw(-10_200, "1212"));
+    }
+
+    @Test
+
+    public void withdrawAmountThatIsGreaterThanBalance(){
+        //given you have account
+        //given you have money input the correct pin
+        //given you have money above balance
+        int myBal = dahliaAccount.getBalance("1212");
+        assertEquals(0, myBal);
+        dahliaAccount.deposit(12_000);
+        assertEquals(12_000, dahliaAccount.getBalance("1212"));
+        dahliaAccount.withdraw(10_000, "1212");
+        assertEquals(2000, dahliaAccount.getBalance("1212"));
+    }
+
+    @Test
+    public void withdrawWrongPinDoesNotWork(){
+        dahliaAccount.deposit(5_000);
+        assertThrows(InvalidPinException.class, ()-> dahliaAccount.withdraw(2_000, "2333"));
+    }
+
+    @Test
+    public void withdrawWithRightPinAndHighAmountDoesNotWorkTest(){
+        dahliaAccount.deposit(5_000);
+        dahliaAccount.withdraw(5000, "1212");
+        assertEquals(0, dahliaAccount.getBalance("1212"));
+    }
+
+    @Test
+    public void getBackBalanceIfUserWantToWithdrawAmountAboveBalance(){
+        dahliaAccount.deposit(5_000);
+        assertThrows(InsufficientFundsException.class, ()-> dahliaAccount.withdraw(6_000, "1212"));
+    }
+
 }

@@ -1,84 +1,42 @@
 package bankApp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Bank {
-
-    private final List<Account> accounts;
-
-    public Bank(String name) {
-        this.accounts = new ArrayList<>();
+    private int numberOfCustomer;
+    private final Account[] accounts = new Account[10];
+    public void createAccountFor(String accountName, String pin) {
+        Account account = new Account((numberOfCustomer+1)+ "", accountName, pin);
+        accounts[numberOfCustomer] = account;
+        numberOfCustomer++;
     }
-
-    public void registerCustomer(String name, String pin) {
-        int branchCode = 1234;
-        int customerNumber = accounts.size() + 1;
-        int accountNumber = generateAccountNumber(branchCode, customerNumber);
-
-        Account account = new Account(accountNumber, name, pin);
-        accounts.add(account);
+    public int getNumberOfCustomers() {
+        return numberOfCustomer;
     }
-
-    private int generateAccountNumber(int branchCode, int customerNumber) {
-        String accountNumberStr = String.valueOf(branchCode) + String.format("%04d", customerNumber);
-        return Integer.parseInt(accountNumberStr);
-    }
-
-    public void deposit(int accountNumber, int amount) {
-        Account account = findAccount(accountNumber);
-        if (account != null) {
-            account.deposit(amount);
-        } else {
-            throw new IllegalArgumentException("Account not found");
-        }
-    }
-
-    public void withdraw(int accountNumber, int amount, String pin) {
-        Account account = findAccount(accountNumber);
-        if (account != null) {
-            account.withdraw(amount, pin);
-        } else {
-            throw new IllegalArgumentException("Account not found");
-        }
-    }
-
-    public void transfer(int fromAccountNumber, int toAccountNumber, int amount, String pin) {
-        Account fromAccount = findAccount(fromAccountNumber);
-        Account toAccount = findAccount(toAccountNumber);
-
-        if (fromAccount != null && toAccount != null) {
-            fromAccount.withdraw(amount, pin);
-            toAccount.deposit(amount);
-        } else {
-            throw new IllegalArgumentException("One or both accounts not found");
-        }
-    }
-
-    public int checkBalance(int accountNumber, String pin) {
-        Account account = findAccount(accountNumber);
-        if (account != null) {
-            return account.getBalance(pin);
-        } else {
-            throw new IllegalArgumentException("Account not found");
-        }
-    }
-
-    public void removeAccount(int accountNumber, String pin) {
-        Account account = findAccount(accountNumber);
-        if (account != null) {
-            accounts.remove(account);
-        } else {
-            throw new IllegalArgumentException("Account not found");
-        }
-    }
-
-    private Account findAccount(int accountNumber) {
-        for (Account account : accounts) {
-            if (account.getNumber() == accountNumber) {
+    public Account findAccount(String accountNumber) {
+        for(Account account : accounts){
+            if(account.getNumber().equals(accountNumber))
                 return account;
-            }
         }
         return null;
+    }
+
+    public void deposit(int amount, String accountNumber) {
+        Account account =  findAccount(accountNumber);
+        account.deposit(amount);
+    }
+
+    public Account withdraw(int amount, String accountNumber, String pin) {
+        Account account = findAccount(accountNumber);
+        account.getBalance(accountNumber);
+        account.withdraw(amount, pin);
+        return account;
+    }
+
+    public void transfer(String sender, String receiver, int amount, String pin) {
+        Account senderAccount = findAccount(sender);
+        Account receiverAccount = findAccount(receiver);
+
+        senderAccount.withdraw(amount, pin);
+        receiverAccount.deposit(amount);
+
     }
 }

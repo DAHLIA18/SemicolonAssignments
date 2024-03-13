@@ -1,53 +1,62 @@
 package bankApp;
 
-class Account {
-    private final int number;
-     private String pin;
-         private int balance;
+public class Account {
+    private String pin;
+    private String number;
+    private String name;
+    private int balance;
 
-         public Account(String name, int number, int balance,  String pin) {
-             this.number = number;
-             this.pin = pin;
-             this.balance = 0;
+    public Account(){};
+    public Account(String accountNumber, String accountName, String accountPin){
+        pin = accountPin;
+        number = accountNumber;
+        name = accountName;
+    }
+    public int getBalance(String pin){
+        if(!pin.equals(this.pin)) throw new InvalidPinException("Invalid PIN,Please Try Again");
+        return balance;
+    }
 
-         }
+    public void deposit(int amount) {
+        boolean isValidAmount = isValidAmount(amount);
+        if (!isValidAmount) throw new InvalidAmountException("Cannot deposit negative amount,Try again");
+        balance = getBalance(pin) + amount;
+    }
 
-         public int getNumber() {
+    public String getNumber() {
+        return number;
+    }
 
-             return number;
-         }
+    public String getName() {
+        return name;
+    }
 
-         public void deposit(int amount) {
-            if(amount <= 0) throw new InvalidAmountException("Enter a valid amount");
-            balance += amount;
-         }
 
-         public void withdraw(int amount, String pin) {
-             if (amount <= 0) throw new InvalidAmountException("Invalid Amount");
-             if (this.pin.equals(pin)) {
-                 balance -= amount;
-             } else {
-                 throw new InvalidPinException("Incorrect PIN");
-             }
-         }
+    public void withdraw(int amount, String pin){
+        boolean amountIsValid = balance >= amount && amount > 0;
+        if (amount > balance) throw new InsufficientFundsException("You cannot Withdraw above your balance");
+        if (!amountIsValid) throw new InvalidAmountException("Cannot withdraw negative amount");
+        else if (!isCorrect(pin)) throw new InvalidPinException("Invalid PIN");
+        if(isCorrect(pin) && amountIsValid){
+            balance -= amount;
+        }
+    }
 
-         public int checkBalance(String pin) {
-             if (this.pin.equals(pin)) {
-                 return balance;
-             } else {
-                 throw new InvalidPinException("Incorrect PIN");
-             }
-         }
+    private static boolean isValidAmount(int amount) {
+        return amount > 0;
+    }
 
-         public void changePin(String oldPin, String newPin) {
-             if (this.pin.equals(oldPin)) {
-                 this.pin = newPin;
-             } else {
-                 throw new InvalidPinException("Incorrect old PIN");
-             }
-         }
+    private boolean isCorrect(String pin){
+        if (!pin.equals(this.pin)) throw new InvalidPinException("Invalid PIN");
+        return true;
+    }
 
-    public String getPin() {
-             return pin;
+    @Override
+    public String toString() {
+        return "Account{" +
+                "number='" + number + '\'' +
+                ", name='" + name + '\'' +
+                ", balance=" + balance +
+                '}';
     }
 }

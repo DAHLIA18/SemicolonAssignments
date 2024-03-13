@@ -9,81 +9,173 @@ import static ticTacToe.Mark.O;
 import static ticTacToe.Mark.X;
 
 public class PlayerTest {
-
     private Player player1;
     private Player player2;
-    private Board gameBoard;
-
+    private Board board;
 
     @BeforeEach
-    void setUp() {
-        player1 = new Player(X, "xy");
-        player2 = new Player(O, "oman");
-        gameBoard = new Board();
+    void setUp(){
+        player1 = new Player(X, "Dahlia");
+        player2 = new Player(O, "MyBabe");
+        board = new Board();
+    }
+
+
+    @Test
+    void testToGetPlayerMark(){
+        assertEquals(X, player1.getMark());
+        assertEquals(O, player2.getMark());
     }
 
     @Test
-    public void testThatPlayersExist() {
-        Player player1 = new Player(X, "xy");
-        Player player2 = new Player(O, "oman");
-        assertNotNull(player2);
-        assertNotNull(player1);
+    void testThatBoardExists(){
+        assertNotNull(board);
     }
 
     @Test
-    public void testThatBoardExist() {
-        Board gameBoard = new Board();
-        assertNotNull(gameBoard);
+    void testThatBoardIsEmpty(){
+        board.displayBoardSurface();
     }
 
     @Test
-    public void testThatBoardEmpty() {
-        Board gameBoard = new Board();
-        gameBoard.displayBoardSurface();
+    void player1CanPlayGameByPuttingMarkXOnThePositionEntered(){
+        player1.playGame(2, board);
+        Mark [][] boardSurface = board.getBoardSurface();
+        assertEquals(X, boardSurface[0][1]);
+    }
+    @Test
+    void player2CanPlayGameByPuttingMarkOOnThePositionEntered(){
+        player2.playGame(3, board);
+        Mark [][] boardSurface = board.getBoardSurface();
+        assertEquals(O, boardSurface[0][2]);
     }
 
     @Test
-    public void testThatPlayer1CanMarkOnTheBoard() {
-        player1.playGame(4, gameBoard);
-        Mark[][] boardSurface = gameBoard.getBoardSurface();
-        assertEquals(X, boardSurface[1][0]);
+    void player1AndPlayer2CanPlayGameByPuttingMarkXAndMarkOOnThePositionEnteredRespectively(){
+        player1.playGame(5, board);
+        player2.playGame(3, board);
+        Mark [][] boardSurface = board.getBoardSurface();
+        assertEquals(X, boardSurface[1][1]);
+        assertEquals(O, boardSurface[0][2]);
     }
 
     @Test
-    public void testThatPlayer2CanMarkOnTheBoard() {
-        player2.playGame(6, gameBoard);
-        Mark[][] boardSurface = gameBoard.getBoardSurface();
-        assertEquals(O, boardSurface[1][2]);
-    }
-
-    @Test
-    public void testExceptionIsThrownIfAPlayerMarksAWrongPosition() {
+    void exceptionIsThrownIfAPlayerEntersAPositionThatIsNotOnBoard(){
         assertThrows(ArrayIndexOutOfBoundsException.class,
-                () -> player1.playGame(11, gameBoard));
+                ()-> player1.playGame(11, board));
         assertThrows(ArrayIndexOutOfBoundsException.class,
-                () -> player2.playGame(-2, gameBoard));
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> player1.playGame(0, gameBoard));
-
+                ()-> player1.playGame(0, board));
+        assertThrows(ArrayIndexOutOfBoundsException.class,
+                ()-> player1.playGame(-5, board));
     }
 
     @Test
-    public void testThatPlayer1CanOnlyMarkAnEmptyPositionOnTheBoard() {
-        Mark[][] boardSurface = gameBoard.getBoardSurface();
-        player1.playGame(7, gameBoard);
-        assertThrows(TicTacToeException.class, () -> player2.playGame(7, gameBoard));
-        assertEquals(X, boardSurface[2][0]);
+    void testThatPlayerCanOnlyPlayInAPositionThatIsEmpty_ExceptionIsThrownIfAPlayersTryToPlayOnAPositionThatIsNotEmpty(){
+        Mark [][] boardSurface = board.getBoardSurface();
+        player1.playGame(5, board);
+        assertThrows(TicTacToeException.class,
+                ()-> player2.playGame(5,board));
+        assertEquals(X, boardSurface[1][1]);
     }
 
     @Test
-    public void testThatPlayer2CanOnlyMarkAnEmptyPositionOnTheBoard() {
-        Mark[][] boardSurface = gameBoard.getBoardSurface();
-        player2.playGame(8, gameBoard);
-        assertThrows(TicTacToeException.class, () -> player1.playGame(8, gameBoard));
-        assertEquals(O, boardSurface[2][1]);
+    void trueIsReturnedIfThereIsAWinnerOnRowZero(){
+        player1.playGame(1, board);
+        player2.playGame(9, board);
+        player1.playGame(2, board);
+        player2.playGame(6, board);
+        player1.playGame(3, board);
+        assertTrue(board.isAWinner());
+    }
+
+    @Test
+    void trueIsReturnedIfThereIsAWinnerOnRowOne(){
+        player1.playGame(9, board);
+        player2.playGame(4, board);
+        player1.playGame(7, board);
+        player2.playGame(5, board);
+        player1.playGame(1, board);
+        player2.playGame(6, board);
+        assertTrue(board.isAWinner());
+    }
+
+    @Test
+    void trueIsReturnedIfThereIsAWinnerOnRowTwo(){
+        player1.playGame(7, board);
+        player2.playGame(2, board);
+        player1.playGame(8, board);
+        player2.playGame(6, board);
+        player1.playGame(9, board);
+        assertTrue(board.isAWinner());
+    }
+    @Test
+    void trueIsReturnedIfThereIsAWinnerOnColumnZero(){
+        player1.playGame(9, board);
+        player2.playGame(1, board);
+        player1.playGame(5, board);
+        player2.playGame(4, board);
+        player1.playGame(3, board);
+        player2.playGame(7, board);
+        assertTrue(board.isAWinner());
+    }
+
+    @Test
+    void trueIsReturnedIfThereIsAWinnerOnColumnOne(){
+        player1.playGame(1, board);
+        player2.playGame(2, board);
+        player1.playGame(3, board);
+        player2.playGame(5, board);
+        player1.playGame(9, board);
+        player2.playGame(8, board);
+        assertTrue(board.isAWinner());
+    }
+
+    @Test
+    void trueIsReturnedIfThereIsAWinnerOnColumnTwo(){
+        player1.playGame(3, board);
+        player2.playGame(2, board);
+        player1.playGame(6, board);
+        player2.playGame(5, board);
+        player1.playGame(9, board);
+        player2.playGame(1, board);
+        assertTrue(board.isAWinner());
+    }
+
+    @Test
+    void trueIsReturnedIfThereIsAWinnerForwardDiagonal(){
+        player1.playGame(1, board);
+        player2.playGame(2, board);
+        player1.playGame(5, board);
+        player2.playGame(6, board);
+        player1.playGame(9, board);
+        player2.playGame(8, board);
+        assertTrue(board.isAWinner());
+    }
+
+    @Test
+    void trueIsReturnedIfThereIsAWinnerBackWardDiagonal(){
+        player1.playGame(3, board);
+        player2.playGame(2, board);
+        player1.playGame(5, board);
+        player2.playGame(6, board);
+        player1.playGame(7, board);
+        player2.playGame(8, board);
+        assertTrue(board.isAWinner());
+
+    }
+    @Test
+    void trueIsReturnedWhenThereIsATie(){
+        player1.playGame(1, board);
+        player2.playGame(2, board);
+        player1.playGame(3, board);
+        player2.playGame(9, board);
+        player1.playGame(5, board);
+        player2.playGame(6, board);
+        player1.playGame(8, board);
+        player2.playGame(7, board);
+        player1.playGame(4, board);
+        assertFalse(board.isAWinner());
+        assertTrue(board.isATie());
     }
 }
-//    @Test
-//    public void testThatTrueIsReturnedWhenPlayer1Wins(){
-//        player1
-//    }
-//}
+
